@@ -126,7 +126,7 @@ class HourlyPaymentPolicy(PaymentPolicy):
         base = employee.rate * employee.hours
         bonus = self.bonus_amount if employee.hours > self.bonus_threshold else 0
         total = base + bonus
-        employee.log_transaction("payment", total, "Hourly + bonus if > threshold")
+        employee.log_transaction("payment", total, f"Hourly ({employee.hours} hours) + bonus ${bonus}") #revisar bien esto 
         return total
 
 class FreelancerPaymentPolicy(PaymentPolicy):
