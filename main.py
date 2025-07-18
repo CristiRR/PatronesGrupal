@@ -1,7 +1,7 @@
 import os
 from RefEmployees import (
     SalariedEmployee, HourlyEmployee, Freelancer, Intern,
-    ManagerVacationPolicy, VPVacationPolicy, DefaultVacationPolicy, InternVacationPolicy,
+    ManagerVacationPolicy, VPVacationPolicy, DefaultVacationPolicy, InternVacationPolicy, FreelancerVacationPolicy,
     load_payment_policies_from_json
 )
 
@@ -38,14 +38,14 @@ class EmployeeFactory:
             raise ValueError("Tipo de empleado no válido.")
 
     def _get_vacation_policy(self, role):
-        if role == "manager":
-            return ManagerVacationPolicy()
-        elif role == "vice_president":
-            return VPVacationPolicy()
-        elif role == "intern":
-            return InternVacationPolicy()
-        else:
-            return DefaultVacationPolicy()
+        policies = {
+            "manager": ManagerVacationPolicy(),
+            "vice_president": VPVacationPolicy(),
+            "intern": InternVacationPolicy(),
+            "freelancer": FreelancerVacationPolicy()
+        }
+        return policies.get(role, DefaultVacationPolicy())
+
 
 class EmployeeManager:
     def __init__(self):
@@ -141,23 +141,26 @@ class EmployeeManager:
 
     def request_vacation(self):
         self.clear_screen()
-        if not self.employees:
-            print("No hay empleados disponibles.")
+        valid_employees = [emp for emp in self.employees if emp.can_request_vacation()]
+
+        if not valid_employees:
+            print("No hay empleados elegibles para vacaciones.")
             input("Presione Enter para continuar...")
             return
-        
 
-        for idx, emp in enumerate(self.employees):
+        for idx, emp in enumerate(valid_employees):
             print(f"{idx}. {emp.name} ({emp.role}) - {emp.vacation_days} días de vacaciones")
+
         try:
             idx = int(input("Seleccione el índice del empleado: "))
             days = int(input("Días de vacaciones: "))
             payout = input("¿Payout en lugar de tiempo libre? (s/n): ").lower() == "s"
-            self.employees[idx].request_vacation(days, payout)
+            valid_employees[idx].request_vacation(days, payout)
             print("Vacaciones registradas.")
         except Exception as e:
             print(f"Error: {e}")
-        input("Presione Enter para continuar...")
+            input("Presione Enter para continuar...")
+
 
     def pay_employees(self):
         self.clear_screen()
