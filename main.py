@@ -24,7 +24,7 @@ class EmployeeFactory:
         elif emp_type == "freelancer":
             projects = []
             while True:
-                pname = input("Nombre del proyecto (o 'fin' para terminar): ")
+                pname = input("Nombre del proyecto (o 'fin' para terminar): ") #ROMPER FLUJO B Y LLEVARLO AL FLUJO INICIAL AL CREAR ROL
                 if pname.lower() == "fin":
                     break
                 amount = float(input("Monto del proyecto: "))
@@ -88,8 +88,13 @@ class EmployeeManager:
 
     def create_employee(self):
         name = input("Nombre del empleado: ")
-        role = input("Rol (intern, manager, vice_president, freelancer): ").lower() #Sacaremos al otro de aqui
-        emp_type = input("Tipo de pago de para el empleado (salaried/hourly/freelancer): ").lower() #AQUI VA CAMBIO SE HA SACADO AL INTERN
+        role = input("Rol (intern, manager, vice_president, freelancer): ").lower()
+
+        if role == "freelancer":
+            emp_type = "freelancer"  # Se agrega el nuevo flujo para freelancer
+        else:
+            emp_type = input("Tipo de pago para el empleado (salaried/hourly): ").lower()
+
         try:
             employee = self.factory.create_employee(name, role, emp_type)
             self.employees.append(employee)
@@ -97,6 +102,7 @@ class EmployeeManager:
         except Exception as e:
             print(f"Error: {e}")
         input("Presione Enter para continuar...")
+
 
     def view_by_role(self):
         while True:
@@ -169,7 +175,7 @@ class EmployeeManager:
             print(f"{idx}. {emp.name} ({emp.role})")
         try:
             idx = int(input("Seleccione el índice del empleado: "))
-            self.employees[idx].show_transactions() #Something is wrong in here we are missing the value of the transaction
+            self.employees[idx].show_transactions() 
         except Exception as e:
             print(f"Error: {e}")
         input("Presione Enter para continuar...")
